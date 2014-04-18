@@ -37,6 +37,7 @@ import erogenousbeef.bigreactors.common.multiblock.block.BlockMBCreativePart;
 import erogenousbeef.bigreactors.common.multiblock.block.BlockMultiblockGlass;
 import erogenousbeef.bigreactors.common.multiblock.block.BlockReactorControlRod;
 import erogenousbeef.bigreactors.common.multiblock.block.BlockReactorPart;
+import erogenousbeef.bigreactors.common.multiblock.block.BlockReactorRadiationReflector;
 import erogenousbeef.bigreactors.common.multiblock.block.BlockReactorRedstonePort;
 import erogenousbeef.bigreactors.common.multiblock.block.BlockTurbinePart;
 import erogenousbeef.bigreactors.common.multiblock.block.BlockTurbineRotorPart;
@@ -49,6 +50,7 @@ import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorF
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorGlass;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorPart;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorPowerTap;
+import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorRadiationReflector;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorRedNetPort;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityReactorRedstonePort;
 import erogenousbeef.bigreactors.common.multiblock.tileentity.TileEntityTurbineComputerPort;
@@ -90,6 +92,7 @@ public class BigReactors {
 	public static Block blockYelloriumFuelRod;
 	public static BlockReactorPart blockReactorPart;
 	public static Block blockReactorControlRod;
+	public static Block blockReactorRadiationReflector;
 	public static Block blockReactorRedstonePort; // UGH. Why does the redstone API not allow me to check metadata? :(
 	
 	public static BlockTurbinePart blockTurbinePart;
@@ -408,6 +411,7 @@ public class BigReactors {
 			GameRegistry.registerTileEntity(TileEntityCyaniteReprocessor.class, "BRCyaniteReprocessor");
 			
 			GameRegistry.registerTileEntity(TileEntityReactorControlRod.class, "BRReactorControlRod");
+			GameRegistry.registerTileEntity(TileEntityReactorRadiationReflector.class, "BRTileEntityReactorRadiationReflector");
 			GameRegistry.registerTileEntity(TileEntityReactorRedNetPort.class, "BRReactorRedNetPort");
 			GameRegistry.registerTileEntity(TileEntityReactorRedstonePort.class,"BRReactorRedstonePort");
 			GameRegistry.registerTileEntity(TileEntityReactorComputerPort.class, "BRReactorComputerPort");
@@ -550,6 +554,16 @@ public class BigReactors {
 			OreDictionary.registerOre("glassReactor", blockMultiblockGlass.getItemStack("reactor"));
 			OreDictionary.registerOre("glassTurbine", blockMultiblockGlass.getItemStack("turbine"));
 			
+			BRConfig.CONFIGURATION.save();
+		}
+
+		if(BigReactors.blockReactorRadiationReflector == null) {
+			BRConfig.CONFIGURATION.load();
+
+			BigReactors.blockReactorRadiationReflector = new BlockReactorRadiationReflector(BRConfig.CONFIGURATION.getBlock("ReactorRadiationReflector", BigReactors.BLOCK_ID_PREFIX + 14).getInt(), Material.iron);
+			GameRegistry.registerBlock(BigReactors.blockReactorRadiationReflector, ItemBlock.class, "BRReactorRadiationReflector");
+			OreDictionary.registerOre("reactorRadiationReflector", new ItemStack(blockReactorRadiationReflector, 1));
+
 			BRConfig.CONFIGURATION.save();
 		}
 		
