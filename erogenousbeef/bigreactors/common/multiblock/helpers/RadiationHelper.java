@@ -92,14 +92,11 @@ public class RadiationHelper {
 		for(ForgeDirection dir : StaticUtils.CardinalDirections) {
 			radPacket.hardness = radHardness;
 			radPacket.intensity = effectiveRadIntensity;
-			int ttl = 4;
+			radPacket.ttl = 4;
+			radPacket.dir = dir;
 			currentCoord.copy(originCoord);
 
-			while(ttl > 0 && radPacket.intensity > 0.0001f) {
-				ttl--;
-				currentCoord.translate(dir);
-				performIrradiation(world, data, radPacket, currentCoord.x, currentCoord.y, currentCoord.z);
-			}
+			propagateRatiation(world, data, radPacket, currentCoord);
 		}
 
 		// Apply changes
@@ -120,8 +117,16 @@ public class RadiationHelper {
 		// Fertility decay, at least 0.1 rad/t, otherwise halve it every 10 ticks
 		fertility = Math.max(0f, fertility - Math.max(0.1f, fertility/denominator));
 	}
+
+	public static void propagateRadiation(World world, RadiationData data, RadiationPacket radiation, CoordTriplet coord) {
+		while(radiation.ttl > 0 && radiation.intensity > 0.0001f) {
+			radiation.ttl--;
+			coord.translate(radiation.dir);
+			performIrradiation(world, data, radiation, coord.x, coord.y, coord.z);
+		}
+	}
 	
-	private void performIrradiation(World world, RadiationData data, RadiationPacket radiation, int x, int y, int z) {
+	private static void performIrradiation(World world, RadiationData data, RadiationPacket radiation, int x, int y, int z) {
 		TileEntity te = world.getBlockTileEntity(x, y, z);
 		if(te instanceof IRadiationModerator) {
 			((IRadiationModerator)te).moderateRadiation(data, radiation);
@@ -150,11 +155,11 @@ public class RadiationHelper {
 		}
 	}
 	
-	private void moderateByAir(RadiationData data, RadiationPacket radiation) {
+	private static void moderateByAir(RadiationData data, RadiationPacket radiation) {
 		applyModerationFactors(data, radiation, airData);
 	}
 	
-	private void moderateByBlock(RadiationData data, RadiationPacket radiation, int blockID, int metadata) {
+	private static void moderateByBlock(RadiationData data, RadiationPacket radiation, int blockID, int metadata) {
 		ReactorInteriorData moderatorData = null;
 
 		if(blockID == Block.blockIron.blockID) {
@@ -185,7 +190,7 @@ public class RadiationHelper {
 		applyModerationFactors(data, radiation, moderatorData);
 	}
 	
-	private void moderateByFluid(RadiationData data, RadiationPacket radiation, Fluid fluid) {
+	private static void moderateByFluid(RadiationData data, RadiationPacket radiation, Fluid fluid) {
 		
 		float absorption, heatEfficiency, moderation;
 		String name = fluid.getName();
